@@ -2,22 +2,26 @@ module.exports = {
   purge: {
     enabled: true,
     content: [
-      './**/*.php',
-      './**/*.html',
-      './resources/**/*.vue',
+      './src/Datepicker.vue',
     ],
     options: {
       whitelistPatterns: [
-        /bg-red/,/bg-orange/,/bg-yellow/,/bg-green/,/bg-blue/,/bg-teal/,/bg-indigo/,/bg-purple/,/bg-pink/,
-        /text-red/,/text-orange/,/text-yellow/,/text-green/,/text-blue/,/text-teal/,/text-indigo/,/text-purple/,/text-pink/,
+        // /bg-.*?-(200|300|500|700|900)/,
+        // /text-.*?-(200|300|500|700|900)/
+        /text-.*?-(300|500)/,
+        /bg-.*?-(300|500|700)/,
+        /group-hover\:bg-.*?-(200|900)/,
       ],
     }
   },
   theme: {
+    screens: {
+      'sm': '640px'
+    },
     extend: {},
   },
   variants: {
-    backgroundColor: ['responsive', 'hover', 'group-hover']
+    backgroundColor: ['hover', 'group-hover']
   },
   plugins: [
     require('@tailwindcss/ui'),

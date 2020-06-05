@@ -214,9 +214,10 @@
     import flip from '@popperjs/core/lib/modifiers/flip'
     import preventOverflow from '@popperjs/core/lib/modifiers/preventOverflow';
 
-    import { RRule, RRuleSet, rrulestr } from 'rrule'
+    import { RRule } from 'rrule'
 
     export default {
+        name: 'Datepicker',
         props: {
             // Default date to show in the picker
             default: {
