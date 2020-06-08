@@ -1,5 +1,35 @@
 @tailwind base;
 
+.shadow-datepicker{
+    box-shadow: 0 3px 15px -3px rgba(0, 0, 0, 0.15), 0 1px 6px -2px rgba(0, 0, 0, 0.075);
+}
+[data-popper-arrow],
+[data-popper-arrow]::before {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    z-index: -1;
+}
+[data-popper-arrow]::before {
+    content: '';
+    transform: rotate(45deg);
+    background: currentColor;
+    box-shadow: 0 3px 15px -2px rgba(0, 0, 0, 0.15), 0 1px 6px -1px rgba(0, 0, 0, 0.075);
+    z-index: 50;
+}
+[data-popper-placement^='top'] > [data-popper-arrow]{
+    bottom: -5px;
+}
+[data-popper-placement^='right'] > [data-popper-arrow]{
+    left:-5px;
+}
+[data-popper-placement^='bottom'] > [data-popper-arrow]{
+    top: -5px;
+}
+[data-popper-placement^='left'] > [data-popper-arrow]{
+    right:-5px;
+}
+
 @tailwind components;
 
 @tailwind utilities;

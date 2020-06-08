@@ -1,198 +1,199 @@
 <template>
     <div 
-    class="datepicker inline-block">
+    class="inline-block">
         <div 
         ref="trigger"
-        :class="['trigger', this.opts.triggerClass]"
-        @click="show = true"
-        v-show="!inline">
-            <slot :date="date">
+        :class="[this.opts.triggerClass]"
+        v-show="!inline"
+        @click="show = true">
+            <slot :date="api.dates" :methods="api.methods">
                 <input 
                 :name="name"
                 type="text" 
                 class="form-input transition duration-150 ease-in-out sm:text-sm sm:leading-5" 
                 @focus="show = true"
-                @blur="show = false"
+                @keydown.tab="show = false"
                 :value="selectedReadable">
             </slot>
         </div>
         
         <div 
         ref="picker"
-        class="picker"
+        v-show="!inline && show" 
+        class="w-full max-w-xs rounded-lg shadow-datepicker"
         :class="{
-            'text-gray-900': !dark,
-            'text-white': dark,
             'z-50': !inline,
-            'is-inline mt-1': inline,
+            'is-inline mt-1 border border-gray-300': inline,
         }"
-        role="datepicker"
-        style="width:320px">
-            <div v-if="inline || show">
-                <div ref="arrow"></div>
+        role="datepicker">
+            <div 
+            v-if="opts.withPointer && !inline"
+            data-popper-arrow 
+            :class="{
+                'text-white': !dark,
+                'text-gray-900': dark,
+            }"></div>
 
-                <div 
-                class="picker-inner pt-3 pb-2 px-2 rounded-lg"
-                :class="{
-                    'bg-white': !dark,
-                    'bg-gray-900': dark,
-                    'shadow-datepicker': !inline,
-                    'border border-gray-300': inline,
-                }">
-                    <div class="flex items-center font-bold mb-1">
-                        <!--
-                        --------------------------------------- 
-                            Header
-                        --------------------------------------- 
-                        -->
-                        <div 
-                        class="flex-initial flex items-center justify-center w-8 h-8 rounded-full leading-none select-none"
-                        :class="[
-                            !canSubTime ? 'opacity-50' : '',
-                            canSubTime ? 'cursor-pointer ' + _theme.navHover : '',
-                        ]"
-                        @click="subTime()">
-                            <svg class="w-4" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
-                            </svg>
-                        </div>
-                        <div class="flex-1 text-center">
-                            <span 
-                            v-if="view == 'days'"
-                            class="p-1 -m-1 cursor-pointer rounded-md"
-                            :class="[
-                                _theme.navHover
-                            ]"
-                            @click="changeView('months')">{{ focus.format('MMMM') }}</span> 
-
-                            <span 
-                            v-if="view !== 'years'"
-                            class="p-1 -m-1 cursor-pointer rounded-md"
-                            :class="[
-                                _theme.navHover
-                            ]"
-                            @click="changeView('years')">{{ focus.format('YYYY') }}</span>
-
-                            <span v-if="view == 'years'">
-                                {{ this.focus.clone().subtract(4, 'years').format('YYYY') }} - {{ this.focus.clone().add(7, 'years').format('YYYY') }}
-                            </span>
-                        </div>
-                        <div 
-                        class="flex-initial flex items-center justify-center w-8 h-8 rounded-full leading-none select-none"
-                        :class="[
-                            !canAddTime ? 'opacity-50' : '',
-                            canAddTime ? 'cursor-pointer ' + _theme.navHover : '',
-                        ]"
-                        @click="addTime()">
-                            <svg class="w-4" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                            </svg>
-                        </div>
-                    </div>
-
+            <div 
+            v-if="inline || show" 
+            class="pt-3 pb-2 px-2 rounded-lg"
+            :class="{
+                'text-gray-900 bg-white': !dark,
+                'text-white bg-gray-900': dark,
+            }">
+                <div class="flex items-center font-bold mb-1">
                     <!--
                     --------------------------------------- 
-                        Days View 
+                        Header
                     --------------------------------------- 
                     -->
-                    <div
-                    v-if="view == 'days'">
-                        <div class="flex uppercase py-2">
-                            <div 
-                            v-for="weekDay in weekDays" 
-                            class="text-center text-gray-400 text-xs font-semibold" 
-                            style="width: 14.28%">
-                                {{ weekDay }}
-                            </div>
-                        </div>
+                    <div 
+                    class="flex-initial flex items-center justify-center w-8 h-8 rounded-full leading-none select-none"
+                    :class="[
+                        !canSubTime ? 'opacity-50' : '',
+                        canSubTime ? 'cursor-pointer ' + _theme.navHover : '',
+                    ]"
+                    @click="subTime()">
+                        <svg class="w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1 text-center">
+                        <span 
+                        v-if="view == 'days'"
+                        class="p-1 cursor-pointer rounded-md"
+                        :class="[
+                            _theme.navHover
+                        ]"
+                        @click="changeView('months')">{{ focus.format('MMMM') }}</span> 
 
-                        <div class="flex flex-wrap">
-                            <div 
-                            v-for="day in days" 
-                            class="flex items-center py-1 group" 
-                            style="width: 14.28%" 
-                            :class="[
-                                isSelectable(day) ? 'cursor-pointer' : '',
-                                !isSelectable(day) ? 'cursor-default' : '',
-                                isOverflow(day) && isSelectable(day) && !inFullRange(day) ? 'opacity-50' : '',
-                                !isSelectable(day) ? 'opacity-25 line-through' : '',
-                                inRange(day) ? 'range' : '',
-                                isWeekend(day) && !inFullRange(day) ? _theme.weekendBg : '',
-                            ]"
-                            @click="selectDay(day)"
-                            @mouseenter="marshallDayEnter(day)"
-                            @mouseleave="marshallDayLeave(day)">
-                                <div class="flex w-full items-center justify-center">
-                                    <div 
-                                    class="flex items-center justify-center h-10 text-sm leading-none" 
-                                    :class="[ 
-                                        isSelected(day) ? _theme.day.selected : '',
-                                        !isSelected(day) && isSelectable(day) && !isRangeEnd(day) ? _theme.day.hover : '',
-                                        !isSelected(day) && isRangeEnd(day) ? _theme.rangeEndHover : '',
-                                        isToday(day) && !inFullRange(day) && !isSelected(day) ? 'border border-gray-400' : '',
-                                        
-                                        !inRange(day) ? 'w-10 rounded-full' : '',
-                                        inRange(day) ? ['w-full', _theme.day.inRange] : '',
-                                        isRangeStart(day) ? 'w-full rounded-l-full rounded-r-none border-0' : '',
-                                        isRangeEnd(day) ? 'w-full rounded-r-full rounded-l-none border-0' : '',
-                                    ]">
-                                        {{ day.format('D') }}
-                                    </div>
+                        <span 
+                        v-if="view !== 'years'"
+                        class="p-1 -mx-1 cursor-pointer rounded-md"
+                        :class="[
+                            _theme.navHover
+                        ]"
+                        @click="changeView('years')">{{ focus.format('YYYY') }}</span>
+
+                        <span v-if="view == 'years'">
+                            {{ this.focus.clone().subtract(4, 'years').format('YYYY') }} - {{ this.focus.clone().add(7, 'years').format('YYYY') }}
+                        </span>
+                    </div>
+                    <div 
+                    class="flex-initial flex items-center justify-center w-8 h-8 rounded-full leading-none select-none"
+                    :class="[
+                        !canAddTime ? 'opacity-50' : '',
+                        canAddTime ? 'cursor-pointer ' + _theme.navHover : '',
+                    ]"
+                    @click="addTime()">
+                        <svg class="w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!--
+                --------------------------------------- 
+                    Days View 
+                --------------------------------------- 
+                -->
+                <div
+                v-if="view == 'days'">
+                    <div class="flex uppercase py-2">
+                        <div 
+                        v-for="weekDay in weekDays" 
+                        class="text-center text-gray-400 text-xs font-semibold" 
+                        style="width: 14.28%">
+                            {{ weekDay }}
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap">
+                        <div 
+                        v-for="day in days" 
+                        class="flex items-center py-1 group" 
+                        style="width: 14.28%" 
+                        :class="[
+                            isSelectable(day) ? 'cursor-pointer' : '',
+                            !isSelectable(day) ? 'cursor-default' : '',
+                            isOverflow(day) && isSelectable(day) && !inFullRange(day) ? 'opacity-50' : '',
+                            !isSelectable(day) ? 'opacity-25 line-through' : '',
+                            inRange(day) ? 'range' : '',
+                            isWeekend(day) && !inFullRange(day) ? _theme.weekendBg : '',
+                        ]"
+                        @click="selectDay(day)"
+                        @mouseenter="marshallDayEnter(day)"
+                        @mouseleave="marshallDayLeave(day)">
+                            <div class="flex w-full items-center justify-center">
+                                <div 
+                                class="flex items-center justify-center h-10 text-sm leading-none" 
+                                :class="[ 
+                                    isSelected(day) ? _theme.day.selected : '',
+                                    !isSelected(day) && isSelectable(day) && !isRangeEnd(day) ? _theme.day.hover : '',
+                                    !isSelected(day) && isRangeEnd(day) ? _theme.rangeEndHover : '',
+                                    isToday(day) && !inFullRange(day) && !isSelected(day) ? 'border border-gray-400' : '',
+                                    
+                                    !inRange(day) ? 'w-10 rounded-full' : '',
+                                    inRange(day) ? ['w-full', _theme.day.inRange] : '',
+                                    isRangeStart(day) ? 'w-full rounded-l-full rounded-r-none border-0' : '',
+                                    isRangeEnd(day) ? 'w-full rounded-r-full rounded-l-none border-0' : '',
+                                ]">
+                                    {{ day.format('D') }}
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
 
 
-                    <!-- 
-                    --------------------------------------- 
-                        Months View
-                    --------------------------------------- 
-                    -->
-                    <div
-                    v-if="view == 'months'">
-                        <div class="flex flex-wrap">
+                <!-- 
+                --------------------------------------- 
+                    Months View
+                --------------------------------------- 
+                -->
+                <div
+                v-if="view == 'months'">
+                    <div class="flex flex-wrap">
+                        <div 
+                        class="w-1/4" 
+                        v-for="month in months"
+                        @click="selectMonth(month)">
                             <div 
-                            class="w-1/4" 
-                            v-for="month in months"
-                            @click="selectMonth(month)">
-                                <div 
-                                :class="[ 
-                                    _theme.month.tile,
-                                    _theme.month.tileBg,
-                                    isSelected(month)? _theme.day.selected : '',
-                                    month.format('MY') == today.format('MY') && !isSelected(month)? _theme.month.current : '',
-                                    !isSelectable(month)? 'opacity-25 line-through' : '',
-                                ]">
-                                    {{ month.format('MMM') }}
-                                </div>
+                            :class="[ 
+                                _theme.month.tile,
+                                _theme.month.tileBg,
+                                isSelected(month)? _theme.day.selected : '',
+                                month.format('MY') == today.format('MY') && !isSelected(month)? _theme.month.current : '',
+                                !isSelectable(month)? 'opacity-25 line-through' : '',
+                            ]">
+                                {{ month.format('MMM') }}
                             </div>
                         </div>
                     </div>
+                </div>
 
 
-                    <!-- 
-                    --------------------------------------- 
-                        Years View
-                    --------------------------------------- 
-                    -->
-                    <div
-                    v-if="view == 'years'">
-                        <div class="flex flex-wrap">
+                <!-- 
+                --------------------------------------- 
+                    Years View
+                --------------------------------------- 
+                -->
+                <div
+                v-if="view == 'years'">
+                    <div class="flex flex-wrap">
+                        <div 
+                        class="w-1/4" 
+                        v-for="year in years"
+                        @click="selectYear(year)">
                             <div 
-                            class="w-1/4" 
-                            v-for="year in years"
-                            @click="selectYear(year)">
-                                <div 
-                                :class="[ 
-                                    _theme.month.tile,
-                                    _theme.month.tileBg,
-                                    isSelected(year)? _theme.day.selected : '',
-                                    year.format('Y') == today.format('Y') && !isSelected(year)? _theme.month.current : '',
-                                    !isSelectable(year)? 'opacity-25 line-through' : '',
-                                ]">
-                                    {{ year.format('YYYY') }}
-                                </div>
+                            :class="[ 
+                                _theme.month.tile,
+                                _theme.month.tileBg,
+                                isSelected(year)? _theme.day.selected : '',
+                                year.format('Y') == today.format('Y') && !isSelected(year)? _theme.month.current : '',
+                                !isSelectable(year)? 'opacity-25 line-through' : '',
+                            ]">
+                                {{ year.format('YYYY') }}
                             </div>
                         </div>
                     </div>
@@ -209,10 +210,14 @@
     const _      = require('lodash')
     const moment = require('moment')
 
-    import { createPopper } from '@popperjs/core/lib/popper-lite'
-    import arrow from '@popperjs/core/lib/modifiers/arrow'
+    import { popperGenerator, defaultModifiers } from '@popperjs/core/lib/popper-lite'
     import flip from '@popperjs/core/lib/modifiers/flip'
     import preventOverflow from '@popperjs/core/lib/modifiers/preventOverflow';
+    import offset from '@popperjs/core/lib/modifiers/offset';
+    import arrow from '@popperjs/core/lib/modifiers/arrow'
+    const createPopper = popperGenerator({
+        defaultModifiers: [...defaultModifiers, flip, preventOverflow, offset, arrow],
+    })
 
     import { RRule } from 'rrule'
 
@@ -229,19 +234,7 @@
                 default: 'DD/MM/YYYY'
             },
 
-
-            // Action: input, navigate
-            // -----------------------------
-            action: {
-                default: 'input',
-                validator: function (value) {
-                    return ['input', 'navigate'].indexOf(value) !== -1
-                }
-            },
-
-
             // Input name
-            // -----------------------------
             name: {
                 default: ''
             },
@@ -259,6 +252,14 @@
                 default: 'days',
                 validator: function (value) {
                     return ['days', 'months', 'years'].indexOf(value) !== -1
+                }
+            },
+
+            // Event trigger
+            trigger: {
+                default: 'click',
+                validator: function (value) {
+                    return ['click', 'mouseover', 'mouseenter', 'hover'].indexOf(value) !== -1
                 }
             },
 
@@ -361,12 +362,13 @@
                     // Week starts on
                     weekStartsOn: 1,
 
-                    // Transitions
-                    enterTransition: 'fadeInDown',
-                    leaveTransition: 'fadeOutDown',
+                    // TODO.
+                    // Transitions:
+                    // enterTransition: 'fadeInDown',
+                    // leaveTransition: 'fadeOutDown',
 
                     // With pointer?
-                    withPointer: true,
+                    withPointer: false,
 
                     // Enable popper js flip modifier
                     alwaysInView: true,
@@ -561,6 +563,21 @@
 
                     this.show = false
                 }
+            },
+
+            api() {
+                return {
+                    dates: { 
+                        raw: this.date, 
+                        readable: this.selectedReadable 
+                    },
+                    methods: {
+                        show: this.showPicker,
+                        hide: this.hidePicker,
+                        setFocus: this.setFocus,
+                        setDate: this.setDate,
+                    }
+                }
             }
         },
 
@@ -639,14 +656,12 @@
 
         methods: {
             setupPickerOptions(){
-                _.forEach(this.options, (value, key) => {
-                    if(key in this.opts) this.opts[key] = value
-                })
+                this.opts = Object.assign(this.opts, this.options)
             },
 
             setupListeners(){
                 if(!this.inline) {
-                    window.addEventListener('click', this.detectClickOutside, {
+                    window.addEventListener('mousedown', this.detectClickOutside, {
                         capture: true,
                         passive: true
                     })
@@ -655,7 +670,7 @@
 
             teardownListeners(){
                 if(!this.inline) {
-                    window.removeEventListener('click', this.detectClickOutside)
+                    window.removeEventListener('mousedown', this.detectClickOutside)
                 }
             },
 
@@ -663,25 +678,38 @@
                 if(this.inline) return false
 
                 this.$nextTick(() => {
+                    let distance = this.opts.withPointer? 12 : 4
                     let modifiers = [
                         {
-                            name: 'flip',
+                            name: 'preventOverflow',
                             options: {
-                                flipVariations: this.opts.alwaysInView,
+                                padding: {
+                                    top: 5,
+                                    bottom: 5
+                                },
                             },
                         },
-                        preventOverflow
-                    ]
-
-                    // if(this.opts.withPointer) {
-                        modifiers.push({
+                        {
+                            name: 'flip',
+                            enabled: this.opts.alwaysInView,
+                            options: {
+                                padding: 5
+                            }
+                        },
+                        {
+                            name: 'offset',
+                            options: {
+                                offset: [0, distance]
+                            }
+                        },
+                        {
                             name: 'arrow',
                             options: {
-                                element: this.$refs.arrow,
-                                padding: 5,
-                            },
-                        })
-                    // }
+                                enabled: this.opts.withPointer,
+                                padding: 8
+                            }
+                        }
+                    ]
 
                     this.popper = createPopper(this.$refs.trigger, this.$refs.picker, {
                         placement: this.placement,
@@ -690,7 +718,7 @@
                 })
             },
 
-            teardownListeners(){
+            teardownPopper(){
                 if(this.popper !== undefined) {
                     this.popper.destroy()
                 }
@@ -825,9 +853,6 @@
                 this.$nextTick(function(){
                     this.$emit('select', this.selected)
                 })
-
-                // Fire the action
-                if(this.action == 'navigate') this.navigate()
             },
 
             deselect(date){
@@ -929,22 +954,6 @@
                 if(this.picks == 'years') format = 'Y'
 
                 return format
-            },
-
-
-            // Actions
-            // -----------------------------
-            navigate(){
-                let url  = new URL(window.location)
-                let date = this.selected.format(this.format)
-
-                if(url.searchParams.has('date')){
-                    url.searchParams.set('date', date)
-                }else{
-                    url.searchParams.append('date', date)
-                }
-
-                window.location = url.href
             },
 
             // Day specific
@@ -1090,13 +1099,33 @@
             replaceAll(str, search, replacement) {
                 return str.split(search).join(replacement)
             },
+
+            handleMouseLeave() {
+                if(['mouseenter', 'mouseover', 'hover'].indexOf(this.trigger) == -1) {
+                    return false
+                }
+
+                this.show = false
+            },
+
+            // Slot methods
+            showPicker() {
+                this.show = true
+            },
+            hidePicker() {
+                this.show = false
+            },
+            setFocus(date) {
+                this.focusOn(moment(date))
+            },
+            setDate(date, show) {
+                this.select(moment(date))
+                this.focusOn(moment(date))
+
+                if(show){
+                    this.showPicker()
+                }
+            },
         }
     }
 </script>
-
-
-<style scoped>
-    .shadow-datepicker{
-        box-shadow: 0 3px 15px -3px rgba(0, 0, 0, 0.15), 0 1px 6px -2px rgba(0, 0, 0, 0.075);
-    }
-</style>
