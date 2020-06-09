@@ -3,7 +3,7 @@
 
 ### Todo:
 - [x] Remove lodash
-- [x] Replace momentjs with dayjs for better tree shaking
+- [x] Replace momentjs with dayjs
 - [ ] Make rrule an optional dependancy...again for better tree shaking
 - [ ] Make popper an optional dependancy?
 - [x] Maintain focus for when using default input
