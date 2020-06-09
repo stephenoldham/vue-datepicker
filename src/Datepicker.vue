@@ -10,6 +10,7 @@
                 <input 
                 :name="name"
                 type="text" 
+                ref="input"
                 class="form-input transition duration-150 ease-in-out sm:text-sm sm:leading-5" 
                 @focus="show = true"
                 @keydown.tab="show = false"
@@ -20,7 +21,7 @@
         <div 
         ref="picker"
         v-show="!inline && show" 
-        class="w-full max-w-xs rounded-lg shadow-datepicker"
+        class="w-full max-w-xs rounded-lg shadow-datepicker select-none"
         :class="{
             'z-50': !inline,
             'is-inline mt-1 border border-gray-300': inline,
@@ -207,8 +208,11 @@
 
 
 <script>
-    const _      = require('lodash')
-    const moment = require('moment')
+    const dayjs = require('dayjs')
+    const isoWeek = require('dayjs/plugin/isoWeek')
+    dayjs.extend(isoWeek)
+
+    const merge = require('deepmerge')
 
     import { popperGenerator, defaultModifiers } from '@popperjs/core/lib/popper-lite'
     import flip from '@popperjs/core/lib/modifiers/flip'
@@ -324,8 +328,8 @@
                 // Main dates
                 date: null,
                 selected: null,
-                today: moment().startOf('day'),
-                focus: moment().startOf('day'),
+                today: dayjs().startOf('day'),
+                focus: dayjs().startOf('day'),
 
                 // View: days, months, years
                 view: 'days',
@@ -424,7 +428,7 @@
                 let days = []
 
                 for(let i = 1; i <= 7; i++){
-                    days.push(moment().isoWeekday(dow).format(this.opts.dowFormat))
+                    days.push(dayjs().isoWeekday(dow).format(this.opts.dowFormat))
 
                     if(dow < 7){
                         dow++
@@ -439,24 +443,22 @@
             days(){
                 let days = []
 
-                let monthStart    = this.focus.clone().startOf('month')
-                let monthStartDay = parseInt(monthStart.format('E'))
+                let monthStart    = this.focus.startOf('month')
+                let monthStartDay = monthStart.isoWeekday()
                 let startOffset   = monthStartDay < this.opts.weekStartsOn? monthStartDay + 7 : monthStartDay
                 let subDays       = startOffset - this.opts.weekStartsOn
 
-                let monthEnd    = this.focus.clone().endOf('month')
-                let monthEndDay = parseInt(monthEnd.format('E'))
+                let monthEnd    = this.focus.endOf('month')
+                let monthEndDay = monthEnd.isoWeekday()
                 let endOffset   = monthEndDay <= this.weekEndsOn? monthEndDay : monthEndDay - 7
                 let addDays     = this.weekEndsOn - endOffset
 
-                let start     = monthStart.subtract(subDays, 'days')
-                let end       = monthEnd.add(addDays, 'days')
-                let totalDays = Math.abs(start.diff(end, 'days')) + 1
+                let start     = monthStart.subtract(subDays, 'day')
+                let end       = monthEnd.add(addDays, 'day')
+                let totalDays = Math.abs(start.diff(end, 'day')) + 1
 
-                for(let i = 1; i <= totalDays; i++){
-                    days.push(start.clone())
-
-                    start.add(1, 'days')
+                for(let i = 0; i < totalDays; i++){
+                    days.push(start.add(i, 'days'))
                 }
 
                 return days
@@ -464,12 +466,10 @@
 
             months(){
                 let months = []
-                let start = this.focus.clone().startOf('year')
+                let start = this.focus.startOf('year')
 
-                for(let i = 1; i <= 12; i++){
-                    months.push(start.clone())
-
-                    start.add(1, 'months')
+                for(let i = 0; i < 12; i++){
+                    months.push(start.add(i, 'months'))
                 }
 
                 return months
@@ -477,12 +477,10 @@
 
             years(){
                 let years = []
-                let start = this.focus.clone().subtract(4, 'years')
+                let start = this.focus.subtract(4, 'years')
 
-                for(let i = 1; i <= 12; i++){
-                    years.push(start.clone())
-
-                    start.add(1, 'years')
+                for(let i = 0; i < 12; i++){
+                    years.push(start.add(i, 'years'))
                 }
 
                 return years
@@ -552,13 +550,26 @@
                     rangeEndHover: `group-hover:text-${color}-300 group-hover:bg-${color}-700`
                 }
 
-                return this.dark ? _.merge(base, dark) : base
+                return this.dark ? merge(base, dark) : base
             },
 
             detectClickOutside() {
                 return (e) => {
-                    if(!this.show || (e.target === this.$el || this.$el.contains(e.target))){
-                        return
+                    if(!this.show){
+                        return false
+                    }
+
+                    if(e.target === this.$el || this.$el.contains(e.target)){
+                        // Maintain focus if we're using the default input
+                        if(this.$refs.input) {
+                            this.$nextTick(() => {
+                                setTimeout(() => {
+                                    this.$refs.input.focus()
+                                }, 10)
+                            })
+                        }
+
+                        return false
                     }
 
                     this.show = false
@@ -727,12 +738,12 @@
             setupPickerDateLimits(){
                 // Set min/max date limits
                 if(this.from !== null){
-                    let from = moment(this.from)
+                    let from = dayjs(this.from)
                     if(!from.isValid()) console.error("The Datepicker 'from' date is invalid")
                     this.minDate = from
                 }
                 if(this.to !== null){
-                    let to = moment(this.to)
+                    let to = dayjs(this.to)
                     if(!to.isValid()) console.error("The Datepicker 'to' date is invalid")
                     this.maxDate = to
                 }
@@ -754,10 +765,10 @@
                     defaultDate = defaultDate.map(date => {
                         // Check for allowed strings
                         if(['now', 'today'].indexOf(date.toLowerCase()) !== -1){
-                            return moment()
+                            return dayjs()
                         }
 
-                        return moment(date)
+                        return dayjs(date)
                     })
 
                     defaultDate.forEach(date => {
@@ -926,7 +937,7 @@
                 // Check if we have recurrance dates set
                 if(this.denyDates !== null && this.denyDates.length > 0){
                     for (let i = 0; i < this.denyDates.length; i++) {
-                        if(moment(this.denyDates[i]).isSame(date, 'day')) return false
+                        if(dayjs(this.denyDates[i]).isSame(date, 'day')) return false
                     }
                 }
 
@@ -970,7 +981,7 @@
                 return day >= 6
             },
             isDay(date, day){
-                return moment(date).format('dddd').toLowerCase() == day.toLowerCase()
+                return dayjs(date).format('dddd').toLowerCase() == day.toLowerCase()
             },
 
             // Date addition/subtraction
@@ -1116,11 +1127,11 @@
                 this.show = false
             },
             setFocus(date) {
-                this.focusOn(moment(date))
+                this.focusOn(dayjs(date))
             },
             setDate(date, show) {
-                this.select(moment(date))
-                this.focusOn(moment(date))
+                this.select(dayjs(date))
+                this.focusOn(dayjs(date))
 
                 if(show){
                     this.showPicker()

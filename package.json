@@ -48,6 +48,8 @@
     "@vue/cli-plugin-babel": "^4.3.1",
     "@vue/cli-service": "^4.3.1",
     "cross-env": "^7.0.2",
+    "dayjs": "^1.8.28",
+    "deepmerge": "^4.2.2",
     "laravel-mix": "^5.0.4",
     "minimist": "^1.2.5",
     "rollup": "^2.7.3",
