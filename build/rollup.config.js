@@ -1,45 +1,68 @@
+// rollup.config.js
+import fs from 'fs';
+import path from 'path';
 import vue from 'rollup-plugin-vue';
-import buble from 'rollup-plugin-buble';
-import commonjs from 'rollup-plugin-commonjs';
-import replace from 'rollup-plugin-replace';
+import alias from '@rollup/plugin-alias';
+import commonjs from '@rollup/plugin-commonjs';
+import replace from '@rollup/plugin-replace';
+import babel from 'rollup-plugin-babel';
 import { terser } from 'rollup-plugin-terser';
-import resolve from 'rollup-plugin-node-resolve';
-import css from 'rollup-plugin-css-only';
 import minimist from 'minimist';
-import pkg from '../package.json';
+import resolve from '@rollup/plugin-node-resolve';
+
+// Get browserslist config and remove ie from es build targets
+const esbrowserslist = fs.readFileSync('./.browserslistrc')
+  .toString()
+  .split('\n')
+  .filter((entry) => entry && entry.substring(0, 2) !== 'ie');
 
 const argv = minimist(process.argv.slice(2));
 
+const projectRoot = path.resolve(__dirname, '..');
+
 const baseConfig = {
-  input: 'src/index.js',
-  external: [
-    'vue',
-    // '@popperjs/core/lib/popper-lite',
-    'rrule'
-  ],
+  input: 'src/entry.js',
   plugins: {
     preVue: [
-      replace({
-        'process.env.NODE_ENV': JSON.stringify('production'),
+      resolve(),
+      alias({
+        resolve: ['.js', '.jsx', '.ts', '.tsx', '.vue'],
+        entries: {
+          '@': path.resolve(projectRoot, 'src'),
+        },
       }),
-      commonjs(),
     ],
+    replace: {
+      'process.env.NODE_ENV': JSON.stringify('production'),
+      'process.env.ES_BUILD': JSON.stringify('false'),
+    },
     vue: {
       css: true,
       template: {
         isProduction: true,
       },
     },
-    postVue: [
-      buble(
-      {
-        transforms: {
-          dangerousForOf: true,
-        },
-      }
-      ),
-    ],
+    babel: {
+      exclude: 'node_modules/**',
+      extensions: ['.js', '.jsx', '.ts', '.tsx', '.vue'],
+    },
   },
+};
+
+// ESM/UMD/IIFE shared settings: externals
+// Refer to https://rollupjs.org/guide/en/#warning-treating-module-as-external-dependency
+const external = [
+  // list external dependencies, exactly the way it is written in the import statement.
+  // eg. 'jquery'
+  'vue',
+];
+
+// UMD/IIFE shared settings: output.globals
+// Refer to https://rollupjs.org/guide/en#output-globals for details
+const globals = {
+  // Provide global variable names to replace your external imports
+  // eg. jquery: '$'
+  vue: 'Vue',
 };
 
 // Customize configs for individual targets
@@ -47,28 +70,31 @@ const buildFormats = [];
 if (!argv.format || argv.format === 'es') {
   const esConfig = {
     ...baseConfig,
+    external,
     output: {
-      file: pkg.module,
+      file: 'dist/datepicker.esm.js',
       format: 'esm',
       exports: 'named',
-      sourcemap: true,
     },
     plugins: [
+      replace({
+        ...baseConfig.plugins.replace,
+        'process.env.ES_BUILD': JSON.stringify('true'),
+      }),
       ...baseConfig.plugins.preVue,
-      css({
-        output: pkg.style,
+      vue(baseConfig.plugins.vue),
+      babel({
+        ...baseConfig.plugins.babel,
+        presets: [
+          [
+            '@babel/preset-env',
+            {
+              targets: esbrowserslist,
+            },
+          ],
+        ],
       }),
-      vue({
-        ...baseConfig.plugins.vue,
-        css: false,
-      }),
-      ...baseConfig.plugins.postVue,
-      terser({
-        output: {
-          ecma: 6,
-        },
-      }),
-      resolve(),
+      commonjs(),
     ],
   };
   buildFormats.push(esConfig);
@@ -77,29 +103,27 @@ if (!argv.format || argv.format === 'es') {
 if (!argv.format || argv.format === 'cjs') {
   const umdConfig = {
     ...baseConfig,
+    external,
     output: {
       compact: true,
-      file: pkg.main,
+      file: 'dist/datepicker.ssr.js',
       format: 'cjs',
       name: 'Datepicker',
       exports: 'named',
-      sourcemap: true,
+      globals,
     },
     plugins: [
+      replace(baseConfig.plugins.replace),
       ...baseConfig.plugins.preVue,
-      css({
-        output: pkg.style,
-      }),
       vue({
         ...baseConfig.plugins.vue,
         template: {
           ...baseConfig.plugins.vue.template,
           optimizeSSR: true,
         },
-        css: false,
       }),
-      ...baseConfig.plugins.postVue,
-      resolve(),
+      babel(baseConfig.plugins.babel),
+      commonjs(),
     ],
   };
   buildFormats.push(umdConfig);
@@ -108,24 +132,26 @@ if (!argv.format || argv.format === 'cjs') {
 if (!argv.format || argv.format === 'iife') {
   const unpkgConfig = {
     ...baseConfig,
+    external,
     output: {
       compact: true,
-      file: pkg.unpkg,
+      file: 'dist/datepicker.min.js',
       format: 'iife',
       name: 'Datepicker',
       exports: 'named',
-      sourcemap: true,
+      globals,
     },
     plugins: [
+      replace(baseConfig.plugins.replace),
       ...baseConfig.plugins.preVue,
       vue(baseConfig.plugins.vue),
-      ...baseConfig.plugins.postVue,
+      babel(baseConfig.plugins.babel),
+      commonjs(),
       terser({
         output: {
           ecma: 5,
         },
       }),
-      resolve(),
     ],
   };
   buildFormats.push(unpkgConfig);

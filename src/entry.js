@@ -1,5 +1,5 @@
 // Import vue component
-import component from './Datepicker.vue';
+import component from '@/datepicker.vue';
 
 // install function executed by Vue.use()
 const install = function installDatepicker(Vue) {

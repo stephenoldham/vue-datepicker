@@ -39,7 +39,7 @@
             v-if="inline || show" 
             class="pt-3 pb-2 px-2 rounded-lg"
             :class="{
-                'text-gray-900 bg-white': !dark,
+                'text-gray-900 bg-white border border-gray-300': !dark,
                 'text-white bg-gray-900': dark,
             }">
                 <div class="flex items-center font-bold mb-1">
@@ -55,7 +55,7 @@
                         canSubTime ? 'cursor-pointer ' + _theme.navHover : '',
                     ]"
                     @click="subTime()">
-                        <svg class="w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
                         </svg>
                     </div>
@@ -87,7 +87,7 @@
                         canAddTime ? 'cursor-pointer ' + _theme.navHover : '',
                     ]"
                     @click="addTime()">
-                        <svg class="w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
                         </svg>
                     </div>
@@ -206,16 +206,20 @@
 
 
 
-
 <script>
-    const dayjs = require('dayjs')
-    const dayjsPlugins = [
-        require('dayjs/plugin/isoWeek'), 
-        require('dayjs/plugin/updateLocale'), 
-        require('dayjs/plugin/isBetween')
+    import dayjs from 'dayjs'
+    import isoWeek from 'dayjs/plugin/isoWeek'
+    import updateLocale from 'dayjs/plugin/updateLocale'
+    import isBetween from 'dayjs/plugin/isBetween'
+    import advancedFormat from 'dayjs/plugin/advancedFormat'
+    let dayjsPlugins = [
+        isoWeek,
+        updateLocale,
+        isBetween,
+        advancedFormat
     ].map(plugin => dayjs.extend(plugin))
 
-    const merge = require('deepmerge')
+    import merge from 'deepmerge'
 
     import { popperGenerator, defaultModifiers } from '@popperjs/core/lib/popper-lite'
     import flip from '@popperjs/core/lib/modifiers/flip'
