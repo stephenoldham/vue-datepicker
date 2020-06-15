@@ -5,7 +5,7 @@ import Datepicker from '@/Datepicker.vue';
 import './vue-datepicker.css';
 
 export default Vue.extend({
-  name: 'ServeDev',
+  name: 'Dev',
   components: {
     Datepicker
   }
@@ -17,6 +17,9 @@ export default Vue.extend({
     <div class="block w-full" style="height: 1280px"></div>  
     
     <datepicker />
+    <datepicker 
+    :disable="['2020-06-14', '2020-06-28', '2020-06-20']"
+    :options="{ weekStartsOn: 3 }" />
     <datepicker placement="bottom" dark :options="{ withPointer: true, alwaysInView: false }" />
     <datepicker default="2020-03-01" placement="right" dark :options="{ withPointer: true }" />
     

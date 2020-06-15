@@ -4,7 +4,7 @@
         <div 
         ref="trigger"
         :class="[this.opts.triggerClass]"
-        v-show="!inline"
+        v-if="!inline"
         @click="show = true">
             <slot :date="api.dates" :methods="api.methods">
                 <input 
@@ -20,11 +20,11 @@
         
         <div 
         ref="picker"
-        v-show="!inline && show" 
+        v-show="inline || show" 
         class="w-full max-w-xs rounded-lg shadow-datepicker select-none"
         :class="{
             'z-50': !inline,
-            'is-inline mt-1 border border-gray-300': inline,
+            'is-inline': inline,
         }"
         role="datepicker">
             <div 
@@ -209,8 +209,11 @@
 
 <script>
     const dayjs = require('dayjs')
-    const isoWeek = require('dayjs/plugin/isoWeek')
-    dayjs.extend(isoWeek)
+    const dayjsPlugins = [
+        require('dayjs/plugin/isoWeek'), 
+        require('dayjs/plugin/updateLocale'), 
+        require('dayjs/plugin/isBetween')
+    ].map(plugin => dayjs.extend(plugin))
 
     const merge = require('deepmerge')
 
@@ -222,8 +225,6 @@
     const createPopper = popperGenerator({
         defaultModifiers: [...defaultModifiers, flip, preventOverflow, offset, arrow],
     })
-
-    import { RRule } from 'rrule'
 
     export default {
         name: 'Datepicker',
@@ -299,8 +300,8 @@
                 default: false
             },
 
-            // By recurrence rule
-            disableRule:{
+            // By array/function
+            disable:{
                 default: null
             },
 
@@ -335,7 +336,6 @@
                 view: 'days',
 
                 show: false,
-                weekStartsOn: 1,
 
                 // Date limits
                 canSelectPast: true,
@@ -343,8 +343,7 @@
                 minDate: null,
                 maxDate: null,
 
-                // Reccurance pattern
-                denyPattern: null,
+                // Deny rules
                 denyDates: null,
 
                 // Range
@@ -403,7 +402,7 @@
 
                     return dates.join(' - ')
                 }
-
+                
                 return this.selected.format(this.format)
             },
 
@@ -593,12 +592,19 @@
         },
 
         watch: {
-            selected(newValue, oldValue) {
+            selected(newValue) {
                 this.date = newValue
-                
+
+                // If we have a template replace the text
+                if(this.hasTemplate){
+                    this.parseTemplate()
+                }
+
+                if(newValue == null) return
+
                 // Hide on selection
                 if(this.type == 'range'){
-                    if(newValue !== null && newValue.length > 1){
+                    if(newValue.length > 1){
                         this.show = false
                     }
                 }else{
@@ -608,28 +614,32 @@
 
                     this.show = false
                 }
-
-                // If we have a template replace the text
-                if(this.hasTemplate){
-                    this.parseTemplate()
-                }
             },
 
             selectedReadable(newValue) {
                 this.$emit('input', newValue)
             },
 
-            show(newValue, oldValue) {
+            show(newValue) {
                 if(newValue){
                     this.updatePosition()
                 }
             },
+
+            type(newValue) {
+                this.selected = null
+            }
         },
 
         mounted() {
             // Assign any options passed in via props
             // ---------------------------------------------
             this.setupPickerOptions()
+
+
+            // Initial setup for dayjs
+            // ---------------------------------------------
+            this.setupLocale()
 
 
             // Eaves droppin' like J.Edgar ya dig?!
@@ -668,6 +678,12 @@
         methods: {
             setupPickerOptions(){
                 this.opts = Object.assign(this.opts, this.options)
+            },
+
+            setupLocale(){
+                dayjs.updateLocale('en-vue-datepicker', {
+                    weekStart: this.opts.weekStartsOn
+                });
             },
 
             setupListeners(){
@@ -753,7 +769,6 @@
                 this.canSelectFuture = !this.disableFuture
 
                 // Set recurrence limits
-                if(this.disableRule !== null) this.denyPattern = RRule.fromString(this.disableRule)
                 this.updateDenyDates()
             },
 
@@ -837,12 +852,40 @@
             },
 
             updateDenyDates(){
-                if(this.denyPattern == null) return false
+                if(this.disable == null) {
+                    return
+                }
+                
+                let dates = []
+                
+                if(Array.isArray(this.disable)) {
+                    dates = this.disable.map(date => {
+                        return dayjs(date, [
+                            'DD-MM-YYYY',
+                            'DD/MM/YYYY',
+                            'YYYY-MM-DD',
+                            'YYYY/MM/DD'
+                        ])
+                    })
+                }
 
-                let from = this.focus.clone().subtract(1, 'months').startOf('month').toDate()
-                let to   = this.focus.clone().add(1, 'months').endOf('month').toDate()
+                if(typeof this.disable == 'function') {
+                    let from = this.focus.subtract(1, 'months').startOf('month')
+                    let to   = this.focus.clone().add(1, 'months').endOf('month')
+                    let days = []
 
-                this.denyDates = this.denyPattern.between(from, to)
+                    while(from.isBefore(to)) {
+                        days.push(from)
+
+                        from = from.add(1, 'days')
+                    }
+
+                    dates = days.filter(date => {
+                        return this.disable(date)
+                    })
+                }
+
+                this.denyDates = dates
             },
 
             select(date, selectOnly = false){

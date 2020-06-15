@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "A little datepicker vue component",
   "main": "dist/vue-datepicker.ssr.js",
-  "browser": "dist/vue-datepicker.esm.js",
   "module": "dist/vue-datepicker.esm.js",
   "unpkg": "dist/vue-datepicker.min.js",
   "files": [
@@ -11,6 +10,7 @@
     "src/**/*.vue"
   ],
   "scripts": {
+    "docs": "vue-cli-service serve dev/docs.js",
     "serve": "vue-cli-service serve dev/serve.js",
     "build": "cross-env NODE_ENV=production rollup --config build/rollup.config.js && npm run prod",
     "build:ssr": "cross-env NODE_ENV=production rollup --config build/rollup.config.js --format cjs",
@@ -28,34 +28,29 @@
   },
   "author": "Steve Oldham",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/stephenoldham/vue-datepicker/issues"
-  },
-  "homepage": "https://github.com/stephenoldham/vue-datepicker#readme",
   "dependencies": {
     "@popperjs/core": "^2.4.0",
-    "lodash": "^4.17.15",
-    "moment": "^2.26.0",
+    "dayjs": "^1.8.28",
+    "deepmerge": "^4.2.2",
     "rrule": "^2.6.4"
   },
   "devDependencies": {
-    "@babel/core": "^7.9.0",
-    "@babel/preset-env": "^7.9.5",
-    "@rollup/plugin-alias": "^2.2.0",
-    "@rollup/plugin-commonjs": "^11.1.0",
-    "@rollup/plugin-replace": "^2.3.2",
     "@tailwindcss/ui": "^0.3.0",
     "@vue/cli-plugin-babel": "^4.3.1",
     "@vue/cli-service": "^4.3.1",
+    "@vue/compiler-sfc": "^3.0.0-beta.14",
     "cross-env": "^7.0.2",
-    "dayjs": "^1.8.28",
-    "deepmerge": "^4.2.2",
     "laravel-mix": "^5.0.4",
     "minimist": "^1.2.5",
-    "rollup": "^2.7.3",
-    "rollup-plugin-babel": "^4.4.0",
-    "rollup-plugin-terser": "^5.3.0",
-    "rollup-plugin-vue": "^5.1.6",
+    "prismjs": "^1.20.0",
+    "rollup": "^2.15.0",
+    "rollup-plugin-buble": "^0.19.8",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-css-only": "^2.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-replace": "^2.2.0",
+    "rollup-plugin-terser": "^6.1.0",
+    "rollup-plugin-vue": "^6.0.0-beta.6",
     "tailwindcss": "^1.4.6",
     "vue": "^2.6.11",
     "vue-template-compiler": "^2.6.11"
