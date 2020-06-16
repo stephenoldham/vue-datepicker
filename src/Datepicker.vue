@@ -131,7 +131,7 @@
                             index == days.length - 2? 'rounded-bl-md' : '',
                             index == days.length - 1? 'rounded-br-md' : '',
                         ]"
-                        @click="selectDay(day)"
+                        @click.capture.stop.prevent="selectDay(day)"
                         @mouseenter="marshallDayEnter(day)"
                         @mouseleave="marshallDayLeave(day)">
                             <div class="flex w-full items-center justify-center">
@@ -588,7 +588,7 @@
                             this.$nextTick(() => {
                                 setTimeout(() => {
                                     this.$refs.input.focus()
-                                }, 10)
+                                }, 50)
                             })
                         }
 
