@@ -13,7 +13,7 @@ const mix = require('laravel-mix');
 
 if(!mix.inProduction()){
     mix.postCss('src/datepicker.css', 'dev/vue-datepicker.css', [
-        require('tailwindcss'),
+        require('tailwindcss')('./tailwind.dev.js'),
     ])
 }
 

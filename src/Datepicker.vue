@@ -37,9 +37,9 @@
 
             <div 
             v-if="inline || show" 
-            class="pt-3 pb-2 px-2 rounded-lg"
+            class="pt-2 pb-1 px-1 rounded-lg"
             :class="{
-                'text-gray-900 bg-white border border-gray-300': !dark,
+                'text-gray-900 bg-white border border-gray-200': !dark,
                 'text-white bg-gray-900': dark,
             }">
                 <div class="flex items-center font-bold mb-1">
@@ -103,7 +103,10 @@
                     <div class="flex uppercase py-2">
                         <div 
                         v-for="weekDay in weekDays" 
-                        class="text-center text-gray-400 text-xs font-semibold" 
+                        class="text-center text-xs font-semibold" 
+                        :class="[
+                            _theme.weekDay
+                        ]"
                         style="width: 14.28%">
                             {{ weekDay }}
                         </div>
@@ -111,7 +114,7 @@
 
                     <div class="flex flex-wrap">
                         <div 
-                        v-for="day in days" 
+                        v-for="(day, index) in days" 
                         class="flex items-center py-1 group" 
                         style="width: 14.28%" 
                         :class="[
@@ -120,7 +123,13 @@
                             isOverflow(day) && isSelectable(day) && !inFullRange(day) ? 'opacity-50' : '',
                             !isSelectable(day) ? 'opacity-25 line-through' : '',
                             inRange(day) ? 'range' : '',
-                            isWeekend(day) && !inFullRange(day) ? _theme.weekendBg : '',
+                            isWeekend(day) && !inFullRange(day) ? _theme.day.weekendBg : '',
+                            
+                            // Weekend corner rounding
+                            index == 5? 'rounded-tl-md' : '',
+                            index == 6? 'rounded-tr-md' : '',
+                            index == days.length - 2? 'rounded-bl-md' : '',
+                            index == days.length - 1? 'rounded-br-md' : '',
                         ]"
                         @click="selectDay(day)"
                         @mouseenter="marshallDayEnter(day)"
@@ -135,7 +144,12 @@
                                     isToday(day) && !inFullRange(day) && !isSelected(day) ? 'border border-gray-400' : '',
                                     
                                     !inRange(day) ? 'w-10 rounded-full' : '',
-                                    inRange(day) ? ['w-full', _theme.day.inRange] : '',
+                                    inRange(day) ? [
+                                        'w-full', 
+                                        _theme.day.inRange,
+                                        isStartOfWeek(day)? 'box-content -ml-1 pl-1' : '',
+                                        isEndOfWeek(day)? 'box-content -mr-1 pr-1' : '',
+                                    ] : '',
                                     isRangeStart(day) ? 'w-full rounded-l-full rounded-r-none border-0' : '',
                                     isRangeEnd(day) ? 'w-full rounded-r-full rounded-l-none border-0' : '',
                                 ]">
@@ -164,7 +178,7 @@
                                 _theme.month.tile,
                                 _theme.month.tileBg,
                                 isSelected(month)? _theme.day.selected : '',
-                                month.format('MY') == today.format('MY') && !isSelected(month)? _theme.month.current : '',
+                                month.format('MYYYY') == today.format('MYYYY') && !isSelected(month)? _theme.month.current : '',
                                 !isSelectable(month)? 'opacity-25 line-through' : '',
                             ]">
                                 {{ month.format('MMM') }}
@@ -191,7 +205,7 @@
                                 _theme.month.tile,
                                 _theme.month.tileBg,
                                 isSelected(year)? _theme.day.selected : '',
-                                year.format('Y') == today.format('Y') && !isSelected(year)? _theme.month.current : '',
+                                year.format('YYYY') == today.format('YYYY') && !isSelected(year)? _theme.month.current : '',
                                 !isSelectable(year)? 'opacity-25 line-through' : '',
                             ]">
                                 {{ year.format('YYYY') }}
@@ -410,6 +424,10 @@
                 return this.selected.format(this.format)
             },
 
+            weekStartsOn(){
+                return this.opts.weekStartsOn
+            },
+
             weekEndsOn(){
                 return (this.opts.weekStartsOn + 6) > 7? this.opts.weekStartsOn - 1 : this.opts.weekStartsOn + 6
             },
@@ -525,6 +543,7 @@
                 let color = this.theme
                 let base = {
                     navHover: 'hover:bg-gray-200',
+                    weekDay: 'text-gray-400',
                     day: {
                         hover: `group-hover:bg-${color}-200`,
                         selected: `bg-${color}-500 text-white`,
@@ -540,6 +559,7 @@
                 }
                 let dark = {
                     navHover: 'hover:bg-gray-700',
+                    weekDay: 'text-gray-600',
                     day: {
                         hover: `group-hover:bg-${color}-900`,
                         selected: `bg-${color}-500 text-white`,
@@ -783,7 +803,7 @@
                     defaultDate = Array.isArray(defaultDate)? defaultDate : [defaultDate]
                     defaultDate = defaultDate.map(date => {
                         // Check for allowed strings
-                        if(['now', 'today'].indexOf(date.toLowerCase()) !== -1){
+                        if(typeof date == 'string' && ['now', 'today'].indexOf(date.toLowerCase()) !== -1){
                             return dayjs()
                         }
 
@@ -953,7 +973,7 @@
             },
 
             inFocus(date){
-                return this.focus !== null && date.format('DMY') == this.focus.format('DMY')
+                return this.focus !== null && date.format('DMYYYY') == this.focus.format('DMYYYY')
             },
 
             isPast(date){
@@ -995,21 +1015,19 @@
                 let format = this.getIsSelectedFormat()
 
                 if(this.type == 'range' && this.selected !== null){
-                    for (let i = 0; i < this.selected.length; i++) {
-                        if(date.format(format) == this.selected[i].format(format)) return true
-                    }
-
-                    return false
+                    return this.selected.filter(selected => {
+                        return date.format(format) == selected.format(format)
+                    }).length > 0
                 }
 
                 return this.selected !== null && date.format(format) == this.selected.format(format)
             },
 
             getIsSelectedFormat(){
-                let format = 'DMY'
+                let format = 'DMYYYY'
 
-                if(this.picks == 'months') format = 'MY'
-                if(this.picks == 'years') format = 'Y'
+                if(this.view == 'months') format = 'MYYYY'
+                if(this.view == 'years') format = 'YYYY'
 
                 return format
             },
@@ -1017,18 +1035,22 @@
             // Day specific
             // -----------------------------
             isToday(day){
-                return day.format('DMY') == this.today.format('DMY')
+                return day.format('DMYYYY') == this.today.format('DMYYYY')
             },
             isOverflow(day){
                 return day.format('M') !== this.focus.format('M')
             },
             isWeekend(day){
-                day = day.format('E')
-                
-                return day >= 6
+                return ['Saturday', 'Sunday'].indexOf(day.format('dddd')) !== -1
             },
             isDay(date, day){
                 return dayjs(date).format('dddd').toLowerCase() == day.toLowerCase()
+            },
+            isStartOfWeek(day){
+                return day.isoWeekday() == this.weekStartsOn
+            },
+            isEndOfWeek(day){
+                return day.isoWeekday() == this.weekEndsOn
             },
 
             // Date addition/subtraction
@@ -1080,18 +1102,18 @@
 
                 if(rangeEnd == null) return false
 
-                return day.isBetween(rangeStart, rangeEnd)
+                return day.isBetween(rangeStart, rangeEnd, 'day', '()')
             },
             isRangeStart(day){
                 if(this.type !== 'range' || this.selected == null || (this.rangeHover == null && this.selected[1] == null)) return false
 
-                return day.format('DMY') == this.selected[0].format('DMY')
+                return day.format('DMYYYY') == this.selected[0].format('DMYYYY')
             },
             isRangeEnd(day){
                 if(this.type !== 'range' || this.selected == null || (this.rangeHover == null && this.selected[1] == null)) return false
 
                 let end = this.selected[1] == null? this.rangeHover : this.selected[1]
-                return day.format('DMY') == end.format('DMY')
+                return day.format('DMYYYY') == end.format('DMYYYY')
             },
             inFullRange(day){
                 return this.inRange(day) || this.isRangeStart(day) || this.isRangeEnd(day)

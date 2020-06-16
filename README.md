@@ -4,7 +4,8 @@
 ### Todo:
 - [x] Remove lodash
 - [x] Replace momentjs with dayjs
-- [ ] Make rrule an optional dependancy...again for better tree shaking
+- [ ] ~~Make rrule an optional dependancy...again for better tree shaking~~
+- [x] Remove rrule in favour of the ability to add filter callback function
 - [ ] Make popper an optional dependancy?
 - [x] Maintain focus for when using default input
 - [ ] Optionally prefix tailwind css (include separate css and add option to compoenent install)
