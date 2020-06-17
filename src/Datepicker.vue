@@ -14,7 +14,8 @@
                 class="form-input transition duration-150 ease-in-out sm:text-sm sm:leading-5" 
                 @focus="show = true"
                 @keydown.tab="show = false"
-                :value="selectedReadable">
+                :value="selectedReadable"
+                autocomplete="off">
             </slot>
         </div>
         
@@ -39,8 +40,9 @@
             v-if="inline || show" 
             class="pt-2 pb-1 px-1 rounded-lg"
             :class="{
-                'text-gray-900 bg-white border border-gray-200': !dark,
+                'text-gray-900 bg-white': !dark,
                 'text-white bg-gray-900': dark,
+                'border border-gray-200': !dark && inline
             }">
                 <div class="flex items-center font-bold mb-1">
                     <!--
@@ -403,6 +405,11 @@
                 @stores  The popper.js instance
                 @initBy  setupInteraction
                 popper: null,
+
+                @type    function
+                @stores  The focus setTimeout function
+                @initBy  focusTimeout
+                focusTimeout: null,
                 */
             }
         },
@@ -586,9 +593,9 @@
                         // Maintain focus if we're using the default input
                         if(this.$refs.input) {
                             this.$nextTick(() => {
-                                setTimeout(() => {
+                                this.focusTimeout = setTimeout(() => {
                                     this.$refs.input.focus()
-                                }, 50)
+                                }, 100)
                             })
                         }
 
@@ -647,6 +654,10 @@
             show(newValue) {
                 if(newValue){
                     this.updatePosition()
+                    this.setupListeners()
+                }else{
+                    clearTimeout(this.focusTimeout)
+                    this.teardownListeners()
                 }
             },
 
@@ -668,7 +679,7 @@
 
             // Eaves droppin' like J.Edgar ya dig?!
             // ---------------------------------------------
-            this.setupListeners()
+            // this.setupListeners()
 
 
             // Setup Popper Instance
@@ -712,7 +723,7 @@
 
             setupListeners(){
                 if(!this.inline) {
-                    window.addEventListener('mousedown', this.detectClickOutside, {
+                    window.addEventListener('click', this.detectClickOutside, {
                         capture: true,
                         passive: true
                     })
@@ -721,7 +732,7 @@
 
             teardownListeners(){
                 if(!this.inline) {
-                    window.removeEventListener('mousedown', this.detectClickOutside)
+                    window.removeEventListener('click', this.detectClickOutside)
                 }
             },
 
@@ -1149,7 +1160,12 @@
                 }
 
                 // If we currently have a full range
-                if(this.selected == null || this.selected.length == 2) this.selected = [date]
+                if(this.selected == null || this.selected.length == 2){
+                    this.selected = [date]
+
+                    // Reset the range hover for our new selection
+                    this.rangeHover = null
+                }
             },
 
             changeView(view){

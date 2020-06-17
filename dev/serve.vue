@@ -223,19 +223,19 @@ export default Vue.extend({
                     <div class="flex flex-wrap mt-2 mb-4">
                         <div class="mb-3 mr-3">
                             <h4 class="text-gray-700 text-sm mb-2">Placement: top</h4>
-                            <datepicker placement="top"></datepicker>
+                            <datepicker placement="top" :options="{ withPointer: true }"></datepicker>
                         </div>
                         <div class="mb-3 mr-3">
                             <h4 class="text-gray-700 text-sm mb-2">Placement: right</h4>
-                            <datepicker placement="right"></datepicker>
+                            <datepicker placement="right" :options="{ withPointer: true }"></datepicker>
                         </div>
                         <div class="mb-3 mr-3">
                             <h4 class="text-gray-700 text-sm mb-2">Placement: bottom</h4>
-                            <datepicker placement="bottom"></datepicker>
+                            <datepicker placement="bottom" :options="{ withPointer: true }"></datepicker>
                         </div>
                         <div class="mb-3 mr-3">
                             <h4 class="text-gray-700 text-sm mb-2">Placement: left</h4>
-                            <datepicker placement="left"></datepicker>
+                            <datepicker placement="left" :options="{ withPointer: true }"></datepicker>
                         </div>
                     </div>
 
