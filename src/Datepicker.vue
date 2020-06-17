@@ -119,7 +119,7 @@
                         v-for="(day, index) in days" 
                         class="flex items-center py-1 group" 
                         style="width: 14.28%" 
-                        :class="[
+                        :class="_([
                             isSelectable(day) ? 'cursor-pointer' : '',
                             !isSelectable(day) ? 'cursor-default' : '',
                             isOverflow(day) && isSelectable(day) && !inFullRange(day) ? 'opacity-50' : '',
@@ -132,7 +132,7 @@
                             index == 6? 'rounded-tr-md' : '',
                             index == days.length - 2? 'rounded-bl-md' : '',
                             index == days.length - 1? 'rounded-br-md' : '',
-                        ]"
+                        ])"
                         @click.capture.stop.prevent="selectDay(day)"
                         @mouseenter="marshallDayEnter(day)"
                         @mouseleave="marshallDayLeave(day)">
@@ -723,7 +723,7 @@
 
             setupListeners(){
                 if(!this.inline) {
-                    window.addEventListener('click', this.detectClickOutside, {
+                    window.addEventListener('mousedown', this.detectClickOutside, {
                         capture: true,
                         passive: true
                     })
@@ -732,7 +732,7 @@
 
             teardownListeners(){
                 if(!this.inline) {
-                    window.removeEventListener('click', this.detectClickOutside)
+                    window.removeEventListener('mousedown', this.detectClickOutside)
                 }
             },
 
@@ -1222,6 +1222,18 @@
                     this.showPicker()
                 }
             },
+
+            _(classes) {
+                return classes
+                
+                classes = classes.filter(item => item)
+                    .join(' ')
+                    .split(' ')
+
+                return classes.map(item => {
+                    return 'vdp-' + item
+                })
+            }
         }
     }
 </script>
