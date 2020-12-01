@@ -663,7 +663,11 @@
 
             type(newValue) {
                 this.selected = null
-            }
+            },
+
+            picks(newValue) {
+                this.setupPickerFocus()
+            },
         },
 
         mounted() {
