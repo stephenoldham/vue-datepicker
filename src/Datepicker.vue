@@ -1170,8 +1170,10 @@
             revertSelection(){
                 this.selected = this.date
 
-                this.hasChanged = false
-                this.isConfirmed = false
+                this.$nextTick(() => {
+                    this.hasChanged = false
+                    this.isConfirmed = false
+                })
             },
 
             selectedChange(newValue){
