@@ -15,14 +15,22 @@ export default Vue.extend({
             dp2: null,
             dp3: null,
             dp4: null,
-            dpFormat: 'DD MMM YYYY'
+            dpFormat: 'DD MMM YYYY',
+
+            dynamicPicks: 'months',
         }
     },
+
+    methods: {
+        log(msg){
+            console.log(msg)
+        }
+    }
 });
 </script>
 
 <template>
-    <div id="app" class="p-16 bg-gray-900">
+    <div id="app" class="font-sans p-16 bg-gray-900">
         <div class="flex flex-col w-full min-h-full mx-auto my-8 text-gray-900 bg-white rounded shadow" style="max-width: 960px">
             <div class="px-4 py-5 border-b border-gray-200 sm:px-6">
                 <div class="-ml-4 -mt-4 flex justify-between items-center flex-wrap sm:flex-no-wrap">
@@ -153,11 +161,39 @@ export default Vue.extend({
                     <div class="flex flex-wrap">
                         <div class="mb-3 mr-3">
                             <h4 class="text-gray-700 text-sm mb-2">Light mode</h4>
-                            <datepicker name="dp3" type="range"></datepicker>
+                            <datepicker type="range"></datepicker>
                         </div>
                         <div class="mb-3 mr-3">
                             <h4 class="text-gray-700 text-sm mb-2">Dark mode</h4>
-                            <datepicker dark name="dp4" type="range"></datepicker>
+                            <datepicker dark type="range"></datepicker>
+                        </div>
+                        <div class="mb-3 mr-3">
+                            <h4 class="text-gray-700 text-sm mb-2">With Range Presets</h4>
+                            <datepicker dark type="range" :options="{
+                                rangePresets: ['this_week']
+                            }"></datepicker>
+                        </div>
+                    </div>
+                </section>
+
+
+                <section class="mb-16 pb-16 border-b border-gray-200">
+                    <h3 class="text-blue-500 mb-3">Confirm Date</h3>
+                    <p class="text-sm mb-3 max-w-xl">
+                        Add the "confirmable" flag to enable the need to click the customisable confirm button to select a date.
+                    </p>
+
+                    <div class="flex flex-wrap">
+                        <div class="mb-3 mr-3">
+                            <datepicker
+                            dark
+                            confirmable
+                            type="range"
+                            :options="{
+                                rangePresets: ['this_week'],
+                                confirmButtonText: 'Confirm'
+                            }"
+                            @change="log($event)"></datepicker>
                         </div>
                     </div>
                 </section>
@@ -175,6 +211,11 @@ export default Vue.extend({
                         <div class="mb-3 mr-3">
                             <h4 class="text-gray-700 text-sm mb-2">Year Picker</h4>
                             <datepicker format="YYYY" picks="years"></datepicker>
+                        </div>
+
+                        <div class="mb-3 mr-3">
+                            <h4 class="text-gray-700 text-sm mb-2">Dynamic</h4>
+                            <datepicker format="MMMM YYYY" :picks="dynamicPicks"></datepicker>
                         </div>
                     </div>
                 </section>
