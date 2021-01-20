@@ -132,7 +132,7 @@
                                 isOverflow(day) && isSelectable(day) && !inFullRange(day) ? 'opacity-50' : '',
                                 !isSelectable(day) ? 'opacity-25 line-through' : '',
                                 inRange(day) ? 'range' : '',
-                                isWeekend(day) && !inFullRange(day) ? _theme.day.weekendBg : '',
+                                isWeekend(day) ? _theme.day.weekendBg : '',
                                 
                                 // Weekend corner rounding
                                 index == 5? 'rounded-tl-md' : '',
@@ -153,14 +153,20 @@
                                         isToday(day) && !inFullRange(day) && !isSelected(day) ? 'border border-gray-400' : '',
                                         
                                         !inRange(day) ? 'w-10 rounded-full' : '',
-                                        inFullRange(day) ? [
+                                        inRange(day) ? [
                                             'w-full', 
-                                            !isRangeStart(day) && !isRangeEnd(day)? _theme.day.inRange : '',
+                                            _theme.day.inRange,
                                             isStartOfWeek(day)? `box-content -ml-1 pl-1` : '',
                                             isEndOfWeek(day)? `box-content -mr-${dayEdgeOffset} pr-${dayEdgeOffset}` : '',
                                         ] : '',
-                                        isRangeStart(day) ? 'w-full rounded-l-full rounded-r-none border-0' : '',
-                                        isRangeEnd(day) ? 'w-full rounded-r-full rounded-l-none border-0' : '',
+                                        isRangeStart(day) ? [
+                                            'w-full rounded-l-full rounded-r-none border-0',
+                                            isEndOfWeek(day)? `box-content -mr-${dayEdgeOffset} pr-${dayEdgeOffset}` : '',
+                                        ] : '',
+                                        isRangeEnd(day) ? [
+                                            'w-full rounded-r-full rounded-l-none border-0',
+                                            isStartOfWeek(day)? `box-content -ml-1 pl-1` : '',
+                                        ] : '',
                                     ]">
                                         {{ day.format('D') }}
                                     </div>
