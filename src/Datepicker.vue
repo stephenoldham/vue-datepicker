@@ -1026,7 +1026,10 @@
                     })
 
                     if(this.requireConfirm && confirm){
-                        this.isConfirmed = true
+                        this.$nextTick(() => {
+                            this.isConfirmed = true
+                            this.hasChanged = false
+                        })
                     }
                     
                     this.focusOn(defaultDate[0], this.picks)

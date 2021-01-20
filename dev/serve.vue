@@ -188,6 +188,7 @@ export default Vue.extend({
                             <datepicker
                             dark
                             confirmable
+                            default="now"
                             type="range"
                             :options="{
                                 rangePresets: ['this_week'],
