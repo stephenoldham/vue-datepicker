@@ -194,7 +194,8 @@ export default Vue.extend({
                                 rangePresets: ['this_week'],
                                 confirmButtonText: 'Confirm'
                             }"
-                            @change="log($event)"></datepicker>
+                            @change="log({msg:'change', event: $event})"
+                            @select="log({msg:'select', event: $event})"></datepicker>
                         </div>
                     </div>
                 </section>

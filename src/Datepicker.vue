@@ -417,7 +417,14 @@
                 default: function(){
                     return {}
                 }
-            }
+            },
+
+
+            // Output debugging console logs
+            debug: {
+                type: Boolean,
+                default: false,
+            },
         },
 
         data() {
@@ -436,6 +443,9 @@
                 // If requires confirm
                 hasChanged: false,
                 isConfirmed: false,
+
+                // Flag initial setup
+                setupComplete: false,
 
                 // Date limits
                 canSelectPast: true,
@@ -794,14 +804,27 @@
         watch: {
             selected(newValue, oldValue) {
                 // 
+                if(this.debug){
+                    console.log('selected change: ' + newValue)
+                }
+            },
+
+            setupComplete(newValue) {
+                if(this.debug){
+                    console.log('setupComplete change: ' + newValue)
+                }
             },
 
             isConfirmed(newValue) {
+                if(this.debug){
+                    console.log('isConfirmed change: ' + newValue)
+                }
+
                 if(!newValue){
                     return false
                 }
 
-                if(this.selected !== null){
+                if(this.hasChanged){
                     this.selectedChange(this.selected)
                 }
 
@@ -810,6 +833,10 @@
             },
 
             selectedReadable(newValue, oldValue) {
+                if(this.debug){
+                    console.log('selectedReadable change: ' + newValue)
+                }
+
                 if(this.selected == null){
                     return
                 }
@@ -849,7 +876,6 @@
             },
 
             picks(newValue) {
-                console.log('picks updated: ' + newValue)
                 this.setupPickerFocus()
             },
         },
@@ -895,6 +921,11 @@
             // (if we have a tenplate)
             // ---------------------------------------------
             this.setupPickerTemplate()
+
+            // Set setup flag
+            this.$nextTick(() => {
+                this.setupComplete = true
+            })
         },
 
         beforeDestroy() {
@@ -1031,7 +1062,7 @@
                         }
                     })
 
-                    if(this.requireConfirm && confirm){
+                    if(this.requireConfirm){
                         this.$nextTick(() => {
                             this.isConfirmed = true
                             this.hasChanged = false
@@ -1178,7 +1209,10 @@
 
             selectedChange(newValue){
                 this.date = newValue
-                this.$emit('change', newValue)
+
+                if(this.setupComplete){
+                    this.$emit('change', newValue)
+                }
 
                 // If we have a template replace the text
                 if(this.hasTemplate){
@@ -1459,16 +1493,20 @@
             },
             selectRangePreset(preset){
                 this.selected = null
-                this.selectRangeDate(preset.from)
+                this.selectRangeDate(preset.from, true)
 
                 if(preset.to){
-                    this.selectRangeDate(preset.to)
+                    this.selectRangeDate(preset.to, true)
                 }
 
                 this.focusOn(preset.from)
 
                 if(!this.requireConfirm){
                     this.hidePicker()
+                }else{
+                    this.$nextTick(() => {
+                        this.isConfirmed = true
+                    })
                 }
             },
             isPresetSelected(preset){
