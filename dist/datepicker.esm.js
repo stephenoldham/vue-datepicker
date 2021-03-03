@@ -3074,12 +3074,15 @@ var __vue_render__ = function () {
       expression: "inline || show"
     }],
     ref: "picker",
-    staticClass: "w-full rounded-lg shadow-datepicker select-none",
+    staticClass: "rounded-lg shadow-datepicker select-none",
     class: {
       'z-50': !_vm.inline,
       'is-inline': _vm.inline,
       'max-w-lg': _vm.hasRangePresets,
       'max-w-xs': !_vm.hasRangePresets
+    },
+    staticStyle: {
+      "width": "22rem"
     },
     attrs: {
       "role": "datepicker"

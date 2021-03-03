@@ -2923,12 +2923,14 @@ var __vue_render__ = function __vue_render__() {
   })], {
     "date": _vm.api.dates,
     "methods": _vm.api.methods
-  })], 2) : _vm._e(), _vm._ssrNode(" <div role=\"datepicker\"" + _vm._ssrClass("w-full rounded-lg shadow-datepicker select-none", {
+  })], 2) : _vm._e(), _vm._ssrNode(" <div role=\"datepicker\"" + _vm._ssrClass("rounded-lg shadow-datepicker select-none", {
     'z-50': !_vm.inline,
     'is-inline': _vm.inline,
     'max-w-lg': _vm.hasRangePresets,
     'max-w-xs': !_vm.hasRangePresets
-  }) + _vm._ssrStyle(null, null, {
+  }) + _vm._ssrStyle({
+    "width": "22rem"
+  }, null, {
     display: _vm.inline || _vm.show ? '' : 'none'
   }) + ">" + (_vm.opts.withPointer && !_vm.inline ? "<div data-popper-arrow" + _vm._ssrClass(null, {
     'text-white': !_vm.dark,
@@ -2960,7 +2962,7 @@ var __vue_inject_styles__ = undefined;
 var __vue_scope_id__ = undefined;
 /* module identifier */
 
-var __vue_module_identifier__ = "data-v-60fcd655";
+var __vue_module_identifier__ = "data-v-52d0889d";
 /* functional template */
 
 var __vue_is_functional_template__ = false;

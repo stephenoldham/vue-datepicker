@@ -22,13 +22,14 @@
         <div 
         ref="picker"
         v-show="inline || show" 
-        class="w-full rounded-lg shadow-datepicker select-none"
+        class="rounded-lg shadow-datepicker select-none"
         :class="{
             'z-50': !inline,
             'is-inline': inline,
             'max-w-lg': hasRangePresets,
             'max-w-xs': !hasRangePresets,
         }"
+        style="width: 22rem;"
         role="datepicker">
             <div 
             v-if="opts.withPointer && !inline"
@@ -1575,7 +1576,7 @@
                 if(calledOnSelection && !this.opts.hideOnSelect){
                     return
                 }
-                
+
                 this.show = false
             },
             setFocus(date) {
