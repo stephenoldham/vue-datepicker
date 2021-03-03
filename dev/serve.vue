@@ -126,7 +126,7 @@ export default Vue.extend({
                         Change the date by clicking anywhere in the text above.
                     </span>
                 </section>
-            
+
 
                 <section class="mb-16 pb-16 border-b border-gray-200">
                     <h3 class="text-blue-500 mb-3">Date format</h3>
@@ -218,6 +218,20 @@ export default Vue.extend({
                         <div class="mb-3 mr-3">
                             <h4 class="text-gray-700 text-sm mb-2">Dynamic</h4>
                             <datepicker format="MMMM YYYY" :picks="dynamicPicks"></datepicker>
+                        </div>
+                    </div>
+                </section>
+
+
+                <section class="mb-16 pb-16 border-b border-gray-200">
+                    <h3 class="text-blue-500 mb-3">Fine tuning UX</h3>
+                    
+                    <div class="flex flex-wrap">
+                        <div class="mb-3 mr-3">
+                            <h4 class="text-gray-700 text-sm mb-2">Disable hide on select</h4>
+                            <datepicker :options="{
+                                hideOnSelect: false
+                            }"></datepicker>
                         </div>
                     </div>
                 </section>

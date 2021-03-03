@@ -494,6 +494,9 @@
                     // Enable popper js flip modifier
                     alwaysInView: true,
 
+                    // Hide picker after select
+                    hideOnSelect: true,
+
                     // Range Presets
                     rangePresets: [],
 
@@ -878,6 +881,10 @@
             picks(newValue) {
                 this.setupPickerFocus()
             },
+
+            disable(newValue){
+                this.updateDenyDates()
+            },
         },
 
         beforeMount(){
@@ -1224,14 +1231,14 @@
                 // Hide on selection
                 if(this.type == 'range' && !this.confirmable){
                     if(newValue.length > 1){
-                        this.hidePicker()
+                        this.hidePicker(true)
                     }
                 }else{
                     if(this.inline) {
                         this.focusOn(newValue)
                     }
 
-                    this.hidePicker()
+                    this.hidePicker(true)
                 }
 
                 // Reset Changed Flag
@@ -1502,7 +1509,7 @@
                 this.focusOn(preset.from)
 
                 if(!this.requireConfirm){
-                    this.hidePicker()
+                    this.hidePicker(true)
                 }else{
                     this.$nextTick(() => {
                         this.isConfirmed = true
@@ -1564,7 +1571,11 @@
             showPicker() {
                 this.show = true
             },
-            hidePicker() {
+            hidePicker(calledOnSelection = false) {
+                if(calledOnSelection && !this.opts.hideOnSelect){
+                    return
+                }
+                
                 this.show = false
             },
             setFocus(date) {

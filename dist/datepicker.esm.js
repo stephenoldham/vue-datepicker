@@ -1895,6 +1895,8 @@ var script = {
         withPointer: false,
         // Enable popper js flip modifier
         alwaysInView: true,
+        // Hide picker after select
+        hideOnSelect: true,
         // Range Presets
         rangePresets: [],
         // Confirm button
@@ -2272,6 +2274,10 @@ var script = {
 
     picks(newValue) {
       this.setupPickerFocus();
+    },
+
+    disable(newValue) {
+      this.updateDenyDates();
     }
 
   },
@@ -2578,14 +2584,14 @@ var script = {
 
       if (this.type == 'range' && !this.confirmable) {
         if (newValue.length > 1) {
-          this.hidePicker();
+          this.hidePicker(true);
         }
       } else {
         if (this.inline) {
           this.focusOn(newValue);
         }
 
-        this.hidePicker();
+        this.hidePicker(true);
       } // Reset Changed Flag
 
 
@@ -2846,7 +2852,7 @@ var script = {
       this.focusOn(preset.from);
 
       if (!this.requireConfirm) {
-        this.hidePicker();
+        this.hidePicker(true);
       } else {
         this.$nextTick(() => {
           this.isConfirmed = true;
@@ -2910,7 +2916,11 @@ var script = {
       this.show = true;
     },
 
-    hidePicker() {
+    hidePicker(calledOnSelection = false) {
+      if (calledOnSelection && !this.opts.hideOnSelect) {
+        return;
+      }
+
       this.show = false;
     },
 

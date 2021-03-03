@@ -1824,6 +1824,8 @@ var script = {
         withPointer: false,
         // Enable popper js flip modifier
         alwaysInView: true,
+        // Hide picker after select
+        hideOnSelect: true,
         // Range Presets
         rangePresets: [],
         // Confirm button
@@ -2177,6 +2179,9 @@ var script = {
     },
     picks: function picks(newValue) {
       this.setupPickerFocus();
+    },
+    disable: function disable(newValue) {
+      this.updateDenyDates();
     }
   },
   beforeMount: function beforeMount() {
@@ -2481,14 +2486,14 @@ var script = {
 
       if (this.type == 'range' && !this.confirmable) {
         if (newValue.length > 1) {
-          this.hidePicker();
+          this.hidePicker(true);
         }
       } else {
         if (this.inline) {
           this.focusOn(newValue);
         }
 
-        this.hidePicker();
+        this.hidePicker(true);
       } // Reset Changed Flag
 
 
@@ -2728,7 +2733,7 @@ var script = {
       this.focusOn(preset.from);
 
       if (!this.requireConfirm) {
-        this.hidePicker();
+        this.hidePicker(true);
       } else {
         this.$nextTick(function () {
           _this10.isConfirmed = true;
@@ -2783,6 +2788,12 @@ var script = {
       this.show = true;
     },
     hidePicker: function hidePicker() {
+      var calledOnSelection = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+      if (calledOnSelection && !this.opts.hideOnSelect) {
+        return;
+      }
+
       this.show = false;
     },
     setFocus: function setFocus(date) {
@@ -2949,7 +2960,7 @@ var __vue_inject_styles__ = undefined;
 var __vue_scope_id__ = undefined;
 /* module identifier */
 
-var __vue_module_identifier__ = "data-v-d7e81b96";
+var __vue_module_identifier__ = "data-v-60fcd655";
 /* functional template */
 
 var __vue_is_functional_template__ = false;
