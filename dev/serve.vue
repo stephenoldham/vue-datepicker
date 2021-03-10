@@ -191,7 +191,17 @@ export default Vue.extend({
                             default="now"
                             type="range"
                             :options="{
-                                rangePresets: ['this_week'],
+                                rangePresets: [
+                                    'this_week', 
+                                    'this_month', 
+                                    'this_month', 
+                                    'this_month', 
+                                    'this_month', 
+                                    'this_month', 
+                                    'this_month', 
+                                    'this_month', 
+                                    'last_month'
+                                ],
                                 confirmButtonText: 'Confirm'
                             }"
                             @change="log({msg:'change', event: $event})"

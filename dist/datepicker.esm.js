@@ -2276,10 +2276,13 @@ var script = {
       this.setupPickerFocus();
     },
 
-    disable(newValue) {
-      this.updateDenyDates();
-    }
+    disable: {
+      handler(val) {
+        this.updateDenyDates();
+      },
 
+      deep: true
+    }
   },
 
   beforeMount() {
@@ -3081,8 +3084,8 @@ var __vue_render__ = function () {
       'max-w-lg': _vm.hasRangePresets,
       'max-w-xs': !_vm.hasRangePresets
     },
-    staticStyle: {
-      "width": "22rem"
+    style: {
+      'width': _vm.hasRangePresets ? '30rem' : '22rem'
     },
     attrs: {
       "role": "datepicker"
@@ -3248,9 +3251,9 @@ var __vue_render__ = function () {
     staticClass: "relative flex w-1/3 rounded-r-lg",
     class: [_vm._theme.rangePresets.bg]
   }, [_c('div', {
-    staticClass: "absolute top-0 left-0 flex flex-col w-full h-full overflow-y-auto"
+    staticClass: "absolute top-0 left-0 flex flex-col w-full h-full"
   }, [_c('div', {
-    staticClass: "flex-1 p-2"
+    staticClass: "flex-1 p-2 overflow-y-auto"
   }, _vm._l(_vm.rangePresets, function (preset) {
     return _c('span', {
       staticClass: "flex items-center p-2 rounded text-sm whitespace-no-wrap mb-1 cursor-pointer",

@@ -29,7 +29,9 @@
             'max-w-lg': hasRangePresets,
             'max-w-xs': !hasRangePresets,
         }"
-        style="width: 22rem;"
+        :style="{
+            'width': hasRangePresets? '30rem' : '22rem'
+        }"
         role="datepicker">
             <div 
             v-if="opts.withPointer && !inline"
@@ -256,8 +258,8 @@
                 v-if="hasRangePresets" 
                 class="relative flex w-1/3 rounded-r-lg"
                 :class="[_theme.rangePresets.bg]">
-                    <div class="absolute top-0 left-0 flex flex-col w-full h-full overflow-y-auto">
-                        <div class="flex-1 p-2">
+                    <div class="absolute top-0 left-0 flex flex-col w-full h-full">
+                        <div class="flex-1 p-2 overflow-y-auto">
                             <span 
                             v-for="preset in rangePresets"
                             class="flex items-center p-2 rounded text-sm whitespace-no-wrap mb-1 cursor-pointer"
@@ -883,8 +885,11 @@
                 this.setupPickerFocus()
             },
 
-            disable(newValue){
-                this.updateDenyDates()
+            disable: {
+                handler(val){
+                    this.updateDenyDates()
+                },
+                deep: true
             },
         },
 

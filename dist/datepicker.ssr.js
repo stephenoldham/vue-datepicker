@@ -2180,8 +2180,11 @@ var script = {
     picks: function picks(newValue) {
       this.setupPickerFocus();
     },
-    disable: function disable(newValue) {
-      this.updateDenyDates();
+    disable: {
+      handler: function handler(val) {
+        this.updateDenyDates();
+      },
+      deep: true
     }
   },
   beforeMount: function beforeMount() {
@@ -2928,9 +2931,9 @@ var __vue_render__ = function __vue_render__() {
     'is-inline': _vm.inline,
     'max-w-lg': _vm.hasRangePresets,
     'max-w-xs': !_vm.hasRangePresets
-  }) + _vm._ssrStyle({
-    "width": "22rem"
-  }, null, {
+  }) + _vm._ssrStyle(null, {
+    'width': _vm.hasRangePresets ? '30rem' : '22rem'
+  }, {
     display: _vm.inline || _vm.show ? '' : 'none'
   }) + ">" + (_vm.opts.withPointer && !_vm.inline ? "<div data-popper-arrow" + _vm._ssrClass(null, {
     'text-white': !_vm.dark,
@@ -2948,7 +2951,7 @@ var __vue_render__ = function __vue_render__() {
     return "<div class=\"w-1/4\"><div" + _vm._ssrClass(null, [_vm._theme.month.tile, _vm._theme.month.tileBg, _vm.isSelected(month) ? _vm._theme.day.selected : '', month.format('MYYYY') == _vm.today.format('MYYYY') && !_vm.isSelected(month) ? _vm._theme.month.current : '', !_vm.isSelectable(month) ? 'opacity-25 line-through' : '']) + ">" + _vm._ssrEscape("\n                                " + _vm._s(month.format('MMM')) + "\n                            ") + "</div></div>";
   }) + "</div></div>" : "<!---->") + " " + (_vm.view == 'years' ? "<div><div class=\"flex flex-wrap\">" + _vm._ssrList(_vm.years, function (year) {
     return "<div class=\"w-1/4\"><div" + _vm._ssrClass(null, [_vm._theme.month.tile, _vm._theme.month.tileBg, _vm.isSelected(year) ? _vm._theme.day.selected : '', year.format('YYYY') == _vm.today.format('YYYY') && !_vm.isSelected(year) ? _vm._theme.month.current : '', !_vm.isSelectable(year) ? 'opacity-25 line-through' : '']) + ">" + _vm._ssrEscape("\n                                " + _vm._s(year.format('YYYY')) + "\n                            ") + "</div></div>";
-  }) + "</div></div>" : "<!---->") + " " + (!_vm.hasRangePresets && _vm.requireConfirm ? "<div class=\"p-2\"><button type=\"button\"" + _vm._ssrClass("inline-flex items-center justify-center w-full px-3 py-2 border border-transparent text-sm text-white leading-4 font-medium rounded shadow-sm", [_vm._theme.applyBtn.bg, this.canConfirm ? 'cursor-pointer hover:opacity-75' : 'cursor-not-allowed']) + ">" + _vm._ssrEscape("\n                        " + _vm._s(_vm.opts.confirmButtonText) + "\n                    ") + "</button></div>" : "<!---->") + "</div> " + (_vm.hasRangePresets ? "<div" + _vm._ssrClass("relative flex w-1/3 rounded-r-lg", [_vm._theme.rangePresets.bg]) + "><div class=\"absolute top-0 left-0 flex flex-col w-full h-full overflow-y-auto\"><div class=\"flex-1 p-2\">" + _vm._ssrList(_vm.rangePresets, function (preset) {
+  }) + "</div></div>" : "<!---->") + " " + (!_vm.hasRangePresets && _vm.requireConfirm ? "<div class=\"p-2\"><button type=\"button\"" + _vm._ssrClass("inline-flex items-center justify-center w-full px-3 py-2 border border-transparent text-sm text-white leading-4 font-medium rounded shadow-sm", [_vm._theme.applyBtn.bg, this.canConfirm ? 'cursor-pointer hover:opacity-75' : 'cursor-not-allowed']) + ">" + _vm._ssrEscape("\n                        " + _vm._s(_vm.opts.confirmButtonText) + "\n                    ") + "</button></div>" : "<!---->") + "</div> " + (_vm.hasRangePresets ? "<div" + _vm._ssrClass("relative flex w-1/3 rounded-r-lg", [_vm._theme.rangePresets.bg]) + "><div class=\"absolute top-0 left-0 flex flex-col w-full h-full\"><div class=\"flex-1 p-2 overflow-y-auto\">" + _vm._ssrList(_vm.rangePresets, function (preset) {
     return "<span" + _vm._ssrClass("flex items-center p-2 rounded text-sm whitespace-no-wrap mb-1 cursor-pointer", [_vm.isPresetSelected(preset) ? _vm._theme.rangePresets.selected : [_vm._theme.rangePresets.normal, _vm._theme.rangePresets.hover].join(' ')]) + ">" + _vm._s(_vm.getPresetIcon(preset) + preset.label) + "</span>";
   }) + "</div> " + (_vm.requireConfirm ? "<div class=\"p-2\"><button type=\"button\"" + _vm._ssrClass("inline-flex items-center justify-center w-full px-3 py-2 border border-transparent text-sm text-white leading-4 font-medium rounded shadow-sm", [_vm._theme.applyBtn.bg, this.canConfirm ? 'cursor-pointer hover:opacity-75' : 'cursor-not-allowed']) + ">" + _vm._ssrEscape("\n                            " + _vm._s(_vm.opts.confirmButtonText) + "\n                        ") + "</button></div>" : "<!---->") + "</div></div>" : "<!---->") + "</div>" : "<!---->") + "</div>")], 2);
 };
@@ -2962,7 +2965,7 @@ var __vue_inject_styles__ = undefined;
 var __vue_scope_id__ = undefined;
 /* module identifier */
 
-var __vue_module_identifier__ = "data-v-52d0889d";
+var __vue_module_identifier__ = "data-v-3eeda549";
 /* functional template */
 
 var __vue_is_functional_template__ = false;
