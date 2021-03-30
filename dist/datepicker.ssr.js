@@ -1980,7 +1980,7 @@ var script = {
           icon: 'week'
         },
         last_week: {
-          label: 'This Week',
+          label: 'Last Week',
           from: dayjs_min().startOf('week').subtract(1, 'week'),
           to: dayjs_min().endOf('week').subtract(1, 'week'),
           icon: 'week'
@@ -2971,7 +2971,7 @@ var __vue_inject_styles__ = undefined;
 var __vue_scope_id__ = undefined;
 /* module identifier */
 
-var __vue_module_identifier__ = "data-v-272b286d";
+var __vue_module_identifier__ = "data-v-6da51c65";
 /* functional template */
 
 var __vue_is_functional_template__ = false;

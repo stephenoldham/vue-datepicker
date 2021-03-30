@@ -2064,7 +2064,7 @@ var script = {
           icon: 'week'
         },
         last_week: {
-          label: 'This Week',
+          label: 'Last Week',
           from: dayjs_min().startOf('week').subtract(1, 'week'),
           to: dayjs_min().endOf('week').subtract(1, 'week'),
           icon: 'week'

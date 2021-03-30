@@ -673,7 +673,7 @@
                         icon: 'week',
                     },
                     last_week: {
-                        label: 'This Week',
+                        label: 'Last Week',
                         from: dayjs().startOf('week').subtract(1, 'week'),
                         to: dayjs().endOf('week').subtract(1, 'week'),
                         icon: 'week',
