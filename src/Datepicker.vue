@@ -672,6 +672,12 @@
                         to: dayjs().endOf('week'),
                         icon: 'week',
                     },
+                    last_week: {
+                        label: 'This Week',
+                        from: dayjs().startOf('week').subtract(1, 'week'),
+                        to: dayjs().endOf('week').subtract(1, 'week'),
+                        icon: 'week',
+                    },
                     this_month: {
                         label: 'This Month',
                         from: dayjs().startOf('month'),

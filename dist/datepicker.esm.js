@@ -2063,6 +2063,12 @@ var script = {
           to: dayjs_min().endOf('week'),
           icon: 'week'
         },
+        last_week: {
+          label: 'This Week',
+          from: dayjs_min().startOf('week').subtract(1, 'week'),
+          to: dayjs_min().endOf('week').subtract(1, 'week'),
+          icon: 'week'
+        },
         this_month: {
           label: 'This Month',
           from: dayjs_min().startOf('month'),

@@ -1979,6 +1979,12 @@ var script = {
           to: dayjs_min().endOf('week'),
           icon: 'week'
         },
+        last_week: {
+          label: 'This Week',
+          from: dayjs_min().startOf('week').subtract(1, 'week'),
+          to: dayjs_min().endOf('week').subtract(1, 'week'),
+          icon: 'week'
+        },
         this_month: {
           label: 'This Month',
           from: dayjs_min().startOf('month'),
@@ -2965,7 +2971,7 @@ var __vue_inject_styles__ = undefined;
 var __vue_scope_id__ = undefined;
 /* module identifier */
 
-var __vue_module_identifier__ = "data-v-3eeda549";
+var __vue_module_identifier__ = "data-v-272b286d";
 /* functional template */
 
 var __vue_is_functional_template__ = false;
